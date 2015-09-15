@@ -21,6 +21,8 @@ class InventoriesPlugin extends JavaPlugin {
 
   override def onEnable(): Unit = {
 
+    getCommand("inventories").setExecutor(Commands)
+
     //Setup database
 
     db.run(MTable.getTables).onComplete {

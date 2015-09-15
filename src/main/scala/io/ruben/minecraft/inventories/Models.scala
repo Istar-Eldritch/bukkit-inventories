@@ -24,7 +24,7 @@ case class Inventory(contents: String, armor: Option[String] = None, id: Option[
         inventory
     }
   }
-  
+
   private[this] def nextNine(n: Int): Int = if (n % 9 == 0) n else nextNine(n + 1)
 }
 
@@ -36,15 +36,15 @@ object Inventory {
     inventory match {
       case inv: PlayerInventory =>
         Inventory(serializeStacks(inv.getContents), Option(serializeStacks(inv.getArmorContents)), id)
-      case inv: _ =>
-        Inventory(serializeStacks(inv.getContents), None, id)
+      case _ =>
+        Inventory(serializeStacks(inventory.getContents), None, id)
     }
   }
 
-  private def serializeStacks(items: Array[ItemStack]): String =
+  def serializeStacks(items: Array[ItemStack]): String =
     items.map(item => serializer.serializeItemStack(item)).mkString(";")
 
-  private def deserializeStacks(encoded: String): Array[ItemStack] =
+  def deserializeStacks(encoded: String): Array[ItemStack] =
     encoded.split(";").map(str => serializer.deserializeItemStack(str))
 
 }
