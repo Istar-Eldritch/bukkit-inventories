@@ -1,0 +1,10 @@
+name: Inventories
+main: io.ruben.minecraft.inventories.InventoriesPlugin
+version: 1
+database: false
+depend: [ScalaLang]
+
+commands:
+  inventories:
+    description: Base command for the Inventories plugin
+    usage: /avatars [command]
