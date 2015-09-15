@@ -11,5 +11,6 @@ class Inventories(tag: Tag)
 
   def id =  column[Int]("id", O.PrimaryKey)
   def contents = column[String]("contents")
-  def * = (contents, id.?) <> ((Inventory.apply _).tupled, Inventory.unapply)
+  def armor = column[String]("armor")
+  def * = (contents, armor.?, id.?) <> ((Inventory.apply _).tupled, Inventory.unapply)
 }

@@ -2,7 +2,7 @@ name: Inventories
 main: io.ruben.minecraft.inventories.InventoriesPlugin
 version: 1
 database: false
-depend: [ScalaLang]
+depend: [ScalaLang, ProtocolLib]
 
 commands:
   inventories:
