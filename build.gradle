@@ -49,12 +49,13 @@ sourceSets {
 //}
 
 task copyPlugin(type: Copy, dependsOn: jar) {
-    from 'build/libs'
+    from 'build/libs/main'
     include '**/*.jar'
     into pluginsFolder
 }
 
 jar {
+    destinationDir = file('build/libs/main')
     from { // use of closure defers evaluation until execution time
         configurations.bundle.collect {
             zipTree(it)
@@ -64,6 +65,7 @@ jar {
 
 task jarAPI(type: Jar, dependsOn: classes) {
     classifier = 'api'
+    destinationDir = file('build/libs/api')
     from sourceSets.api.output
 }
 
