@@ -1,8 +1,5 @@
 package io.ruben.minecraft.inventories.api
 
-import io.ruben.minecraft.inventories.Inventory
-
-
 /**
  * Created by istar on 17/09/15.
  */

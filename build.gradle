@@ -21,6 +21,12 @@ repositories {
 }
 
 sourceSets {
+    api {
+        scala {
+            srcDirs = ['src/api/scala']
+            output.classesDir = 'build/classes/api'
+        }
+    }
     main {
         scala {
             srcDirs = ['src/main/scala', 'src/api/scala']
@@ -56,6 +62,11 @@ jar {
     }
 }
 
+task jarAPI(type: Jar, dependsOn: classes) {
+    classifier = 'api'
+    from sourceSets.api.output
+}
+
 configurations {
     bundle
 }
@@ -67,4 +78,7 @@ dependencies {
     compile 'com.h2database:h2:1.4.188'
     compile 'com.typesafe.slick:slick_2.11:3.0.3'
     compile 'com.comphenix.protocol:ProtocolLib:+'
+
+    apiCompile 'org.spigotmc:spigot-api:+'
+    apiCompile 'org.scala-lang:scala-library:2.11.7'
 }
