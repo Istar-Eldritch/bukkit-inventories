@@ -23,7 +23,7 @@ repositories {
 sourceSets {
     main {
         scala {
-            srcDirs = ['src/main/scala']
+            srcDirs = ['src/main/scala', 'src/api/scala']
         }
         resources {
             srcDirs = ['src/main/resources']
@@ -66,5 +66,5 @@ dependencies {
     compile 'org.scala-lang:scala-library:2.11.7'
     compile 'com.h2database:h2:1.4.188'
     compile 'com.typesafe.slick:slick_2.11:3.0.3'
-    compile 'com.comphenix.protocol:ProtocolLib:3.6.4'
+    compile 'com.comphenix.protocol:ProtocolLib:+'
 }

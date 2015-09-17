@@ -1,5 +1,5 @@
 name: Inventories
-main: io.ruben.minecraft.inventories.InventoriesPlugin
+main: io.ruben.minecraft.inventories.Main
 version: 1
 database: false
 depend: [ScalaLang, ProtocolLib]

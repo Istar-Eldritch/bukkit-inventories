@@ -2,6 +2,7 @@ package io.ruben.minecraft.inventories
 
 import java.util.logging.Level._
 
+import io.ruben.minecraft.inventories.api.{InventoryFactory, ExtraInventories}
 import org.bukkit.plugin.java.JavaPlugin
 import slick.driver.H2Driver.api._
 import slick.jdbc.meta.MTable
@@ -15,14 +16,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
 * Created by istar on 13/09/15.
 */
-class InventoriesPlugin extends JavaPlugin {
+class Main extends JavaPlugin with ExtraInventories {
 
   def configPath = s"${getDataFolder.getAbsolutePath}/config"
 
   override def onEnable(): Unit = {
-
-    getCommand("inventories").setExecutor(Commands)
-
     //Setup database
 
     db.run(MTable.getTables).onComplete {
@@ -33,10 +31,7 @@ class InventoriesPlugin extends JavaPlugin {
         else {
           getLogger.info("Creating database for first time")
 
-          val setup: DBIO[Unit] = DBIO.seq(
-            (inventories.schema).create
-          )
-          val setupDb: Future[Unit] = db.run(setup)
+          val setupDb: Future[Unit] = db.run(inventories.schema.create)
 
           Await.result(setupDb, Duration.Inf)
           getLogger.info("Database created")
@@ -47,5 +42,7 @@ class InventoriesPlugin extends JavaPlugin {
       }
     }
   }
+
+  override def getFactory: InventoryFactory = Inventory
 
 }
