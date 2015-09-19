@@ -2,7 +2,7 @@ package io.ruben.minecraft.inventories
 
 import java.util.logging.Level._
 
-import io.ruben.minecraft.inventories.api.{InventoryFactory, ExtraInventories}
+import io.ruben.minecraft.inventories.api.{DataInterface, ExtraStorage}
 import org.bukkit.plugin.java.JavaPlugin
 import slick.driver.H2Driver.api._
 import slick.jdbc.meta.MTable
@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
 * Created by istar on 13/09/15.
 */
-class Main extends JavaPlugin with ExtraInventories {
+class Main extends JavaPlugin with ExtraStorage {
 
   def configPath = s"${getDataFolder.getAbsolutePath}/config"
 
@@ -37,12 +37,10 @@ class Main extends JavaPlugin with ExtraInventories {
           getLogger.info("Database created")
         }
       }
-      case Failure(f) => {
+      case Failure(f) =>
         getLogger.log(SEVERE, "Couldn't read/write the database")
-      }
     }
   }
 
-  override def getFactory: InventoryFactory = Inventory
-
+  override def getData: DataInterface = DataAccess
 }

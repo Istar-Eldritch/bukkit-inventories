@@ -1,63 +1,60 @@
 package io.ruben.minecraft.inventories
 
+import java.util.UUID
+
 import com.comphenix.protocol.utility.StreamSerializer
-import io.ruben.minecraft.inventories.api.{Callback, InventoryX, InventoryFactory}
-import org.bukkit.inventory.{ItemStack, PlayerInventory}
+import io.ruben.minecraft.inventories.api.ExtraInventory
+import org.bukkit.inventory.ItemStack
 import slick.driver.H2Driver.api._
+import DataAccess._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
-import DataAccess._
 
-import scala.util.{Failure, Success}
+case class InventoryImp(contents: Array[ItemStack] = Array.empty, armor: Option[Array[ItemStack]] = None, name: Option[String] = None, id:UUID = UUID.randomUUID()) extends ExtraInventory {
+  override def save: Future[ExtraInventory] = db.run(inventories.insertOrUpdate(this)).map { _ => this }
 
-/**
- * Created by istar on 15/09/15.
- */
-case class InventoryImp(contents: String, name: Option[String] = None, armor: Option[String] = None, id: Option[Int] = None) extends InventoryX {
-  def getContents: Array[ItemStack] = Inventory.deserializeStacks(contents)
-  def getArmor: Array[ItemStack] = armor match {
-    case Some(arm) => Inventory.deserializeStacks(arm)
-    case None => Array()
-  }
+  override def setContents(items: Array[ItemStack]): ExtraInventory = copy(contents = items)
 
-  override def save: Future[Int] =
-    db.run((inventories returning inventories.map(_.id)) += this)
+  override def setArmor(items: Option[Array[ItemStack]]): ExtraInventory = copy(armor = items)
 
-  override def save(callback: Callback[Int]): Unit =
-    save.onComplete {
-      case Success(id) => callback.onSuccess(id)
-      case Failure(err) => callback.onFailure(err)
-    }
+  override def setName(name: Option[String]): ExtraInventory = copy(name = name)
 }
 
-object Inventory extends InventoryFactory {
+object InventoryImp extends {
 
   val serializer = new StreamSerializer
-
-  def fromBukkit(inventory: org.bukkit.inventory.Inventory, id: Option[Int] = None): InventoryImp = {
-    inventory match {
-      case inv: PlayerInventory =>
-        InventoryImp(serializeStacks(inv.getContents), Option(serializeStacks(inv.getArmorContents)), None, id)
-      case _ =>
-        InventoryImp(serializeStacks(inventory.getContents), None, None, id)
-    }
-  }
 
   def serializeStacks(items: Array[ItemStack]): String =
     items.map(item => serializer.serializeItemStack(item)).mkString(";")
 
   def deserializeStacks(encoded: String): Array[ItemStack] =
-    encoded.split(";").map(str => serializer.deserializeItemStack(str))
+    if (encoded.length > 0)
+      encoded.split(";").map(str => serializer.deserializeItemStack(str))
+    else
+      Array.empty
+
+  def fromRow(contents: String, armor: Option[String], name: Option[String], id: UUID): InventoryImp = {
+    val dContents = deserializeStacks(contents)
+    val dArmor = armor.collect {case arm => deserializeStacks(arm)}
+    InventoryImp(dContents, dArmor, name, id)
+  }
+
+  def toRow(inv: ExtraInventory) = {
+    val sContents = serializeStacks(inv.contents)
+    val sArmor = inv.armor.collect{ case arm => serializeStacks(arm) }
+    Some((sContents, sArmor, inv.name, inv.id))
+  }
 
 }
 
 class Inventories(tag: Tag)
-  extends Table[InventoryImp](tag, "USER") {
+  extends Table[InventoryImp](tag, "INVENTORY") {
 
-  def id =  column[Int]("id", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("name")
+  def id =  column[UUID]("id", O.PrimaryKey, O.SqlType("UUID"))
   def contents = column[String]("contents")
-  def armor = column[String]("armor")
-  def * = (contents, name.?, armor.?, id.?) <> ((InventoryImp.apply _).tupled, InventoryImp.unapply)
+  def name = column[Option[String]]("name")
+  def armor = column[Option[String]]("armor")
+
+  def * = (contents, armor, name, id) <> ((InventoryImp.fromRow _).tupled, InventoryImp.toRow)
 }

@@ -1,10 +1,5 @@
-name: Inventories
+name: ExtraStorage
 main: io.ruben.minecraft.inventories.Main
-version: 1
+version: 1.1
 database: false
 depend: [ScalaLang, ProtocolLib]
-
-commands:
-  inventories:
-    description: Base command for the Inventories plugin
-    usage: /inventories [command]
