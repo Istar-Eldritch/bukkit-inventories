@@ -5,8 +5,8 @@ import java.util.UUID
 import com.comphenix.protocol.utility.StreamSerializer
 import io.ruben.minecraft.inventories.api.ExtraInventory
 import org.bukkit.inventory.ItemStack
-import slick.driver.H2Driver.api._
 import DataAccess._
+import driver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future

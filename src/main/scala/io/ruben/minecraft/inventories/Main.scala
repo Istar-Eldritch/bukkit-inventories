@@ -4,13 +4,13 @@ import java.util.logging.Level._
 
 import io.ruben.minecraft.inventories.api.{DataInterface, ExtraStorage}
 import org.bukkit.plugin.java.JavaPlugin
-import slick.driver.H2Driver.api._
 import slick.jdbc.meta.MTable
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 import DataAccess._
+import driver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -24,7 +24,7 @@ class Main extends JavaPlugin with ExtraStorage {
     //Setup database
 
     db.run(MTable.getTables).onComplete {
-      case Success(tables) => {
+      case Success(tables) =>
         if(tables.nonEmpty) {
           getLogger.info("Database already exist")
         }
@@ -36,7 +36,6 @@ class Main extends JavaPlugin with ExtraStorage {
           Await.result(setupDb, Duration.Inf)
           getLogger.info("Database created")
         }
-      }
       case Failure(f) =>
         getLogger.log(SEVERE, "Couldn't read/write the database")
     }
